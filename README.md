@@ -1,7 +1,7 @@
 # csv2postgres
 ```Python based csv to postgres data migration```
 
-## This project demonstrates how to setup a postgres server using docker and manipulate database using [SQLAlchemy](https://www.sqlalchemy.org/).
+## This project demonstrates how to setup a postgres server using [Docker](https://docs.docker.com/) and manipulate database using [SQLAlchemy](https://www.sqlalchemy.org/).
 
 ### Requirements
   [Docker](https://docs.docker.com/install/)
