@@ -1,7 +1,7 @@
 # csv2postgres
 ```Python based csv to postgres data migration```
 
-## This project demonstrates how to setup a postgres server using docker and use alchemy DRM.
+## This project demonstrates how to setup a postgres server using docker and manipulate database using [SQLAlchemy](https://www.sqlalchemy.org/).
 
 ### Requirements
   [Docker](https://docs.docker.com/install/)
@@ -14,7 +14,6 @@
 
     ```
     pip3 install sqlalchemy
-    pip3 install psycopg2
     ```
     
 ## Setup
