@@ -24,7 +24,17 @@
             sameersbn/postgresql:9.6-2
         ```
     2. Create your tables by creating sqlalchemy drm based python models. Refer Contacts.py.
-        ```Run contacts.py for this sample project.```
+        ```
+        Create a config.json and add following to avoid run time input.
+        {
+            "user":"",
+            "password":"",
+            "host":"",
+            "port":"",
+            "db_name":""
+        }
+        Run contacts.py for this sample project.
+        ```
     3.Read the csv and upload the data to the database. Refer csv2postgres.py.
         ``` Run csv2postgres.py for this sample project```
 
