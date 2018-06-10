@@ -46,3 +46,8 @@
     
     ``` Run csv2postgres.py for this sample project```
 
+
+## Issues
+    
+    Tests are pending so please file the issues under issues section.
+
