@@ -1,64 +1,59 @@
-import psycopg2 as pg2
-from sqlalchemy import Column, DateTime, String, Integer, ForeignKey, func
-from sqlalchemy.orm import relationship, backref
-from sqlalchemy.ext.declarative import declarative_base
+from Contacts 		import Group, Contact, ContactGroup
+from sqlalchemy 	import create_engine
+from sqlalchemy.orm import sessionmaker, scoped_session
+import json
+import os.path
+import csv
 
 
-Base = declarative_base()
-
-
-class ContactGroup(Base):
-	__tablename__ = 'contactgroup'
-	id 		= Column(Integer, primary_key=True)
-	name 	= Column(String)
+def store(row, session):
+	s 			= session()    
+	contacts 	= [contact.id for contact in s.query(Contact).all() if row[1] == contact.name]
+	groups 		= [group.id for group in s.query(Group).all() if row[0] == group.name]
+	contact_id 	= None
+	group_id 	= None
+	if contacts:
+		contact_id 	= contacts[0]
+	if groups:
+		group_id 	= groups[0]
 	
-	@property
-    def name(self):
-        return self.name
+	if contact_id is not None:
+		record = [cg.id for cg in s.query(ContactGroup).all() if (cg.contact_id == contact_id and cg.group_id == group_id)]
+		if record:
+			print("Record Already Exist")
+		else:
+			cg = ContactGroup(contact_id = contact_id, group_id = group_id)
+			s.add(cg)
+			s.commit()
+	else:
+		c = Contact(name = row[1], number = row[2], email = row[3])
+		s.add(c)
+		s.commit()
+		cid = max([contact.id for contact in s.query(Contact).all()])
+		cg 	= ContactGroup(contact_id = cid, group_id = group_id)
+		s 	= session()
+		s.add(cg)
+		s.commit()
 
-    @email.setter
-    def name(self, email):
-        self.email = name
+if __name__=='__main__':
 
-class Contact(Base):
-	__tablename__ = 'contact'
-	id = Column(Integer, primary_key=True)
-	name = Column(String, unique=True)
-	email = Column(String, unique=True)
-	contactgroup_id = Column(Integer, ForeignKey('contactgroup.id'))
-	# Use cascade='delete,all' to propagate the deletion of a contactgroup onto its contacts
-	contactgroup = relationship(
-		contactgroup,
-		backref=backref('contacts',
-						uselist=True,
-						cascade='delete,all'))
-
-	@validates('email')
-    def validate_email(self, key, address):
-        assert '@' in address
-        return address
-
-	@property
-    def email(self):
-        return self.email
-
-    @email.setter
-    def email(self, email):
-        self.email = email
-	
-	@property
-    def name(self):
-        return self.name
-
-    @email.setter
-    def name(self, email):
-        self.name = name
-	
-	
-
-from sqlalchemy import create_engine
-engine = create_engine('postgresql://admin:admin@localhost:5432/mydb')
-from sqlalchemy.orm import sessionmaker
-session = sessionmaker()
-session.configure(bind=engine)
-Base.metadata.create_all(engine)
+	if os.path.exists("config.json"):
+		config 		= json.load(open("config.json"))
+		user 		= config['user']
+		password 	= config['password']
+		host 		= config['host']
+		port 		= config['port']
+		db_name 	= config['db_name']
+	else:
+		user 		= input("Enter database user: ")
+		password 	= input("Enter database password: ")
+		host 		= input("Enter database host address: ")
+		port 		= input("Enter database port: ")
+		db_name 	= input("Enter database named(default 'postgres'): ")
+	engine 			= create_engine('postgresql://{}:{}@{}:{}/{}'.format(user,password,host,port,db_name))
+	session 		= sessionmaker()
+	session.configure(bind = engine)
+	with open('test.csv', newline = '') as csvfile:
+		spamreader = csv.reader(csvfile, delimiter = ',', quotechar = '"')
+		for row in spamreader:
+			store(row, session)
