@@ -5,8 +5,8 @@
 
 ### Requirements
   [Docker](https://docs.docker.com/install/)
-  [Python3]
-  [Python3-pip]
+  [Python3](https://www.python.org/downloads/release/python-364/)
+  [Python3-pip](https://docs.python.org/3/installing/index.html)
   Python packages
     ```
     pip3 install sqlalchemy
